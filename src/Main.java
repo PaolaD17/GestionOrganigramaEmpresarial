@@ -114,7 +114,10 @@ public static void main(String[] args) {
             case "20":
                 ListarAsignaciones();
                 break;
-
         }
     }
+    System.out.println("");
+    System.out.println("<--- GRACIAS POR PREFERIRNOS!!! --->");
+
+
 }
