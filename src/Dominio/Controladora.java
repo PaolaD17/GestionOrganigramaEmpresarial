@@ -82,11 +82,13 @@ public class Controladora {
 
     public List<Empleado> buscarEmpleadoPorApellido(String apellido){
         List<Empleado> encontrados = new ArrayList<>();
-
-        for (Empleado unEmp : aListaEmpleados) {
-
-            if (unEmp.getApellido().equalsIgnoreCase(apellido)) {
-                encontrados.add(unEmp);
+        for (Empleado unEmpleado : aListaEmpleados) {
+            if (unEmpleado.getJefe() == null) {
+                unEmpleado.buscarPorApellido(
+                        apellido,
+                        encontrados
+                );
+                return encontrados;
             }
         }
         return encontrados;

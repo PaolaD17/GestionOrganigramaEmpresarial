@@ -132,6 +132,16 @@ public class Empleado {
         return null;
     }
 
+    // BÚSQUEDA recursiva por apellido
+    public void buscarPorApellido(String apellidoBuscado, List<Empleado> encontrados) {
+        if (this.apellido.equalsIgnoreCase(apellidoBuscado)) {
+            encontrados.add(this);
+        }
+        for (Empleado sub : subordinados) {
+            sub.buscarPorApellido(apellidoBuscado, encontrados);
+        }
+    }
+
     // RECORRIDO de empleados por niveles
     public static void recorridoPorNiveles(Empleado raiz, int nivelBuscado) {
         Queue<Empleado> cola = new LinkedList<>();
