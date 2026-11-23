@@ -14,6 +14,31 @@ public class Proyecto {
     private Empleado responsable;
     private List<Asignacion> asignaciones;
 
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+    public Empleado getResponsable() { return responsable; }
+
+    public void setResponsable(Empleado responsable) {
+        this.responsable = responsable;
+    }
+
+    public List<Asignacion> getAsignaciones() {
+        return asignaciones;
+    }
+
+    public void setAsignaciones(List<Asignacion> asignaciones) {
+        this.asignaciones = asignaciones;
+    }
+
+
     //Constructor
     public Proyecto(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, String estado, Empleado responsable) {
         this.id = id;
