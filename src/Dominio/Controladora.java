@@ -128,13 +128,24 @@ public class Controladora {
         return false;
     }
 
-    public Cargo buscarCargo(int id) {
-        for (Cargo c : aListaCargos) {
-            if (c.getId() == id) {
-                return c;
-            }
+    public boolean modificarCargo(int id, String nombre, int nivelJerarquico, Double salarioBase) {
+        Cargo cargoAModificar = this.buscarCargoPorId(id);
+        if (cargoAModificar != null) {
+            cargoAModificar.setNombre(nombre);
+            cargoAModificar.setNivelJerarquico(nivelJerarquico);
+            cargoAModificar.setSalarioBase(salarioBase);
+            return true;
         }
-        return null;
+        return false;
+    }
+
+    public boolean eliminarCargo(int id){
+        Cargo cargoAEliminar = buscarCargoPorId(id);
+        if(cargoAEliminar != null) {
+            aListaCargos.remove(cargoAEliminar);
+            return true;
+        }
+        return false;
     }
 
     public List<Cargo> ListaCargos(){
@@ -150,24 +161,141 @@ public class Controladora {
         return null;
     }
 
-    public Departamento buscarDepartamento(int id) {
-        for (Departamento d : aListaDepartamentos) {
-            if (d.getId() == id) {
-                return d;
-            }
+    //DEPARTAMENTO
+    public boolean agregarDepartamento(Departamento departamento){
+        if(buscarDepartamentoPorId(departamento.getId()) == null){
+            aListaDepartamentos.add(departamento);
+            return true;
         }
-        return null;
+        return false;
     }
 
-    //DEPARTAMENTO
+    public boolean modificarDepartamento(int id, String nombre, String descripcion, Empleado responsable) {
+        Departamento departamentoAModificar = this.buscarDepartamentoPorId(id);
+        if (departamentoAModificar != null) {
+            departamentoAModificar.setNombre(nombre);
+            departamentoAModificar.setDescripcion(descripcion);
+            departamentoAModificar.setResponsable(responsable);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean eliminarDepartamento(int id){
+        Departamento departamentoAEliminar = buscarDepartamentoPorId(id);
+        if(departamentoAEliminar != null) {
+            aListaDepartamentos.remove(departamentoAEliminar);
+            return true;
+        }
+        return false;
+    }
+
     public List<Departamento> ListaDepartamentos(){
         return aListaDepartamentos;
+    }
+
+    public List<Empleado> empleadosPorDepartamento(int idDepartamento){
+        List<Empleado> empleados = new ArrayList<>();
+
+        for(Empleado unEmpleado : aListaEmpleados){
+            if(unEmpleado.getDepartamento().getId() == idDepartamento){
+                empleados.add(unEmpleado);
+            }
+        }
+        return empleados;
     }
 
     public Departamento buscarDepartamentoPorId(int id) {
         for (Departamento departamento : aListaDepartamentos) {
             if (departamento.getId() == id) {
                 return departamento;
+            }
+        }
+        return null;
+    }
+
+    //PROYECTO
+    public boolean agregarProyecto(Proyecto proyecto){
+        if(buscarProyectoPorId(proyecto.getId()) == null){
+            aListaProyectos.add(proyecto);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean modificarProyecto(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, String estado, Empleado responsable) {
+        Proyecto proyectoAModificar = this.buscarProyectoPorId(id);
+        if (proyectoAModificar != null) {
+            proyectoAModificar.setNombre(nombre);
+            proyectoAModificar.setFechaInicio(fechaInicio);
+            proyectoAModificar.setFechaFin(fechaFin);
+            proyectoAModificar.setEstado(estado);
+            proyectoAModificar.setResponsable(responsable);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean eliminarProyecto(int id){
+        Proyecto proyectoAEliminar = buscarProyectoPorId(id);
+        if(proyectoAEliminar != null) {
+            aListaProyectos.remove(proyectoAEliminar);
+            return true;
+        }
+        return false;
+    }
+
+    public List<Proyecto> ListaProyectos(){
+        return aListaProyectos;
+    }
+
+    public Proyecto buscarProyectoPorId(int id) {
+        for (Proyecto proyecto : aListaProyectos) {
+            if (proyecto.getId() == id) {
+                return proyecto;
+            }
+        }
+        return null;
+    }
+
+    //ASIGNACIÓN
+    public boolean agregarAsignacion(Asignacion asignacion){
+        if(buscarAsignacionPorId(asignacion.getId()) == null){
+            aListaAsignaciones.add(asignacion);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean modificarAsignacion(int id, Empleado empleado, Proyecto proyecto, int horasAsignadas, String rol) {
+        Asignacion asignacionAModificar = this.buscarAsignacionPorId(id);
+        if (asignacionAModificar != null) {
+            asignacionAModificar.setEmpleado(empleado);
+            asignacionAModificar.setProyecto(proyecto);
+            asignacionAModificar.setHorasAsignadas(horasAsignadas);
+            asignacionAModificar.setRol(rol);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean eliminarAsignacion(int id){
+        Asignacion asignacionAEliminar = buscarAsignacionPorId(id);
+        if(asignacionAEliminar != null) {
+            aListaAsignaciones.remove(asignacionAEliminar);
+            return true;
+        }
+        return false;
+    }
+
+    public List<Asignacion> ListaAsignaciones(){
+        return aListaAsignaciones;
+    }
+
+    public Asignacion buscarAsignacionPorId(int id) {
+        for (Asignacion asignacion : aListaAsignaciones) {
+            if (asignacion.getId() == id) {
+                return asignacion;
             }
         }
         return null;

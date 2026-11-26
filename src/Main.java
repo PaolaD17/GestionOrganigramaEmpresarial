@@ -1,4 +1,6 @@
 import Dominio.*;
+
+import java.sql.SQLOutput;
 import java.util.*;
 
 public static void main(String[] args) {
@@ -184,18 +186,18 @@ public static void AgregarEmpleado(){
 
     Empleado unEmpleado = new Empleado(id, nombre, apellido, cargo, departamento, salario, fechaIngreso);
 
-    if(idJefe != 0){
-        Empleado jefe = unaControladora.buscarEmpleadoPorId(idJefe);
-        if(jefe == null){
-            System.out.println("Jefe no encontrado.");
-            return;
-        }
-        jefe.agregarSubordinado(unEmpleado);
-    }
-
     if(unaControladora.agregarEmpleado(unEmpleado)){
+        if(idJefe != 0){
+            Empleado jefe = unaControladora.buscarEmpleadoPorId(idJefe);
+            if(jefe == null){
+                System.out.println("Jefe no encontrado.");
+                return;
+            }
+            jefe.agregarSubordinado(unEmpleado);
+        }
         System.out.println("Empleado agregado!!");
-    }else{
+    }
+    else{
         System.out.println("Ocurrió un Error al agregar!!");
     }
 }
@@ -429,10 +431,7 @@ public static void MenuCargos(){
         System.out.println("║   1- Agregar Cargo                         ║");
         System.out.println("║   2- Modificar Cargo                       ║");
         System.out.println("║   3- Eliminar Cargo                        ║");
-        System.out.println("║   4- Ver Árbol de Cargos                   ║");
-        System.out.println("║   5- Mover Cargo                           ║");
-        System.out.println("║   6- Buscar Cargo por ID                   ║");
-        System.out.println("║   7- Buscar Cargo por Nombr                ║");
+        System.out.println("║   4- Listado de Cargos                     ║");
         System.out.println("╠════════════════════════════════════════════╣");
         System.out.println("║   0- Volver                                ║");
         System.out.println("╚════════════════════════════════════════════╝");
@@ -444,36 +443,30 @@ public static void MenuCargos(){
             case "1":
                 AgregarCargo();
                 break;
-//            case "2":
-//                ModificarCargo();
-//                break;
-//            case "3":
-//                EliminarCargo();
-//                break;
-//            case "4":
-//                ListarCargos();
-//                break;
-//            case "5":
-//                MoverCargo();
-//                break;
-//            case "6":
-//                BuscarCargoPorId();
-//                break;
-//            case "7":
-//                BuscarCargoPorNombre();
-//                break;
-//            case "8":
-//                ReporteInventarioPorRama();
-//                break;
+            case "2":
+                ModificarCargo();
+                break;
+            case "3":
+                EliminarCargo();
+                break;
+            case "4":
+                ListarCargos();
+                break;
         }
     }
 }
 public static void AgregarCargo(){
+    Controladora unaControladora = new Controladora();
+
     System.out.println("Ingresar un Cargo");
 
     Scanner keyboard = new Scanner(System.in);
     System.out.println("Ingrese el ID: ");
     int id = keyboard.nextInt();
+    if (unaControladora.buscarCargoPorId(id) != null) {
+        System.out.println("Ya existe un cargo con ese ID.");
+        return;
+    }
 
     keyboard.nextLine();
     System.out.println("Ingrese el Nombre: ");
@@ -487,19 +480,94 @@ public static void AgregarCargo(){
 
     Cargo unCargo = new Cargo(id, nombre, nivelJerarquico, salarioBase);
 
-    Controladora unaControladora = new Controladora();
-
     if(unaControladora.agregarCargo(unCargo)){
-        System.out.println("Cargo agregado!!");
+        System.out.println("Cargo agregado!");
     }else{
         System.out.println("Ocurrió un error al agregar!!");
     }
 }
+public static void ModificarCargo(){
+    Controladora unaControladora = new Controladora();
 
+    System.out.println("Modificar un Cargo");
+    for (Cargo unCargo : unaControladora.ListaCargos()) {
+        System.out.println(unCargo);
+    }
+    System.out.println("");
+    Scanner keyboard = new Scanner(System.in);
+
+    System.out.println("Ingrese el ID del cargo a modificar:");
+    int id = keyboard.nextInt();
+    keyboard.nextLine();
+
+    Cargo unCargo = unaControladora.buscarCargoPorId(id);
+
+    if(unCargo == null){
+        System.out.println("No existe un cargo con ese ID");
+        return;
+    }
+
+    System.out.println("Ingrese el nuevo nombre del cargo:");
+    String nombre = keyboard.nextLine();
+
+    System.out.println("Ingrese el nuevo nivel jerárquico:");
+    int nivelJerarquico = keyboard.nextInt();
+
+    System.out.println("Ingrese el nuevo salario base:");
+    Double salarioBase = keyboard.nextDouble();
+
+    if(unaControladora.modificarCargo(id,nombre,nivelJerarquico,salarioBase)){
+        System.out.println("Cargo modificado correctamente");
+    }
+    else{
+        System.out.println("Error al modificar cargo");
+    }
+}
+public static void EliminarCargo(){
+    System.out.println("Eliminar un Cargo");
+    Controladora unaControladora = new Controladora();
+
+    for (Cargo unCargo: unaControladora.ListaCargos()) {
+        System.out.println(unCargo);
+    }
+    System.out.println("");
+
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+
+    Cargo unCargo = unaControladora.buscarCargoPorId(id);
+
+    if(unCargo == null){
+        System.out.println("No existe un Cargo con ese ID");
+        return;
+    }
+
+    if(unaControladora.eliminarCargo(id)){
+        System.out.println("Cargo eliminado.");
+    }else{
+        System.out.println("Error al eliminar el cargo.");
+    }
+}
+public static void ListarCargos(){
+    System.out.println("LISTADO DE CARGOS:");
+    System.out.println("--------------------------");
+    MostrarCargos();
+    Pausa();
+}
+public static void MostrarCargos(){
+    Controladora unaControladora = new Controladora();
+    for (Cargo unCargo: unaControladora.ListaCargos()) {
+        System.out.println(unCargo);
+    }
+}
 //======================================
 //||     FIN DE SECTOR C A R G O S    ||
 //======================================
-//region Departamentos
+
+//==========================================
+//||   SECTOR D E P A R T A M E N T O S   ||
+//==========================================
 public static void MenuDepartamentos(){
     String opcion = "";
     while(!opcion.equals("0")){
@@ -510,10 +578,8 @@ public static void MenuDepartamentos(){
         System.out.println("║   1- Agregar Departamento                  ║");
         System.out.println("║   2- Modificar Departamento                ║");
         System.out.println("║   3- Eliminar Departamento                 ║");
-        System.out.println("║   4- Ver Árbol de Departamentos            ║");
-        System.out.println("║   5- Mover Departamento                    ║");
-        System.out.println("║   6- Buscar Departamento por ID            ║");
-        System.out.println("║   7- Buscar Departamento por Nombre        ║");
+        System.out.println("║   4- Listado de Departamentos              ║");
+        System.out.println("║   5- Empleados por Departamento            ║");
         System.out.println("╠════════════════════════════════════════════╣");
         System.out.println("║   0- Volver                                ║");
         System.out.println("╚════════════════════════════════════════════╝");
@@ -522,51 +588,216 @@ public static void MenuDepartamentos(){
         opcion = keyboard.nextLine();
 
         switch (opcion){
-//            case "1":
-//                AgregarDepartamento();
-//                break;
-//            case "2":
-//                ModificarDepartamento();
-//                break;
-//            case "3":
-//                EliminarDepartamento();
-//                break;
-//            case "4":
-//                ListarDepartamentos();
-//                break;
-//            case "5":
-//                MoverDepartamento();
-//                break;
-//            case "6":
-//                BuscarDepartamentoPorId();
-//                break;
-//            case "7":
-//                BuscarDepartamentoPorNombre();
-//                break;
-//            case "8":
-//                ReporteInventarioPorRama();
-//                break;
+            case "1":
+                AgregarDepartamento();
+                break;
+            case "2":
+                ModificarDepartamento();
+                break;
+            case "3":
+                EliminarDepartamento();
+                break;
+            case "4":
+                ListarDepartamentos();
+                break;
+            case "5":
+                EmpleadosPorDepartamento();
+                break;
         }
     }
 }
+public static void AgregarDepartamento(){
+    Controladora unaControladora = new Controladora();
 
-//#region Cargos
+    System.out.println("Ingresar un Departamento");
 
-//region Proyectos
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+    if (unaControladora.buscarDepartamentoPorId(id) != null) {
+        System.out.println("Ya existe un departamento con ese ID.");
+        return;
+    }
+
+    keyboard.nextLine();
+    System.out.println("Ingrese el Nombre: ");
+    String nombre = keyboard.nextLine();
+
+    System.out.println("Ingrese la Descripción: ");
+    String descripcion = keyboard.nextLine();
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del Empleado responsable del departamento:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado responsable = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (responsable == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    Departamento unDep = new Departamento(id, nombre, descripcion, responsable);
+
+    if(unaControladora.agregarDepartamento(unDep)){
+        System.out.println("Departamento agregado!");
+    }else{
+        System.out.println("Ocurrió un error al agregar!");
+    }
+}
+public static void ModificarDepartamento(){
+    Controladora unaControladora = new Controladora();
+
+    System.out.println("Modificar un Departamento");
+    for (Departamento unDep : unaControladora.ListaDepartamentos()) {
+        System.out.println(unDep);
+    }
+    System.out.println("");
+    Scanner keyboard = new Scanner(System.in);
+
+    System.out.println("Ingrese el ID del Departamento a modificar:");
+    int id = keyboard.nextInt();
+
+    Departamento unDep = unaControladora.buscarDepartamentoPorId(id);
+
+    if(unDep == null){
+        System.out.println("No existe un Departamento con ese ID");
+        return;
+    }
+
+    System.out.println("Ingrese el nuevo nombre:");
+    String nombre = keyboard.nextLine();
+
+    System.out.println("Ingrese la nueva Descripción:");
+    String descripcion = keyboard.nextLine();
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del Empleado:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado responsable = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (responsable == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    if(unaControladora.modificarDepartamento(id,nombre,descripcion,responsable)){
+        System.out.println("Departamento modificado correctamente");
+    }
+    else{
+        System.out.println("Error al modificar departamento");
+    }
+}
+public static void EliminarDepartamento(){
+    System.out.println("Eliminar un Departamento");
+    Controladora unaControladora = new Controladora();
+
+    for (Departamento unDep: unaControladora.ListaDepartamentos()) {
+        System.out.println(unDep);
+    }
+    System.out.println("");
+
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+
+    Departamento unDep = unaControladora.buscarDepartamentoPorId(id);
+
+    if(unDep == null){
+        System.out.println("No existe un Departamento con ese ID");
+        return;
+    }
+
+    if(unaControladora.eliminarDepartamento(id)){
+        System.out.println("Departamento eliminado.");
+    }else{
+        System.out.println("Error al eliminar el Departamento.");
+    }
+}
+public static void ListarDepartamentos(){
+    System.out.println("LISTADO DE DEPARTAMENTOS:");
+    System.out.println("--------------------------");
+    MostrarDepartamentos();
+    Pausa();
+}
+public static void MostrarDepartamentos(){
+    Controladora unaControladora = new Controladora();
+    for (Departamento unDep: unaControladora.ListaDepartamentos()) {
+        System.out.println(unDep);
+    }
+}
+public static void EmpleadosPorDepartamento(){
+    Controladora unaControladora = new Controladora();
+
+    System.out.println("EMPLEADOS POR DEPARTAMENTO");
+
+    System.out.println();
+    System.out.println("Departamentos disponibles:");
+
+    for(Departamento unDep : unaControladora.ListaDepartamentos()){
+        System.out.println(unDep.getId() + " - " + unDep.getNombre());
+    }
+
+    Scanner keyboard = new Scanner(System.in);
+
+    System.out.println();
+    System.out.println("Ingrese el ID del departamento:");
+
+    int idDepartamento = keyboard.nextInt();
+
+    Departamento departamento = unaControladora.buscarDepartamentoPorId(idDepartamento);
+
+    if(departamento == null){
+        System.out.println("No existe un departamento con ese ID.");
+        Pausa();
+        return;
+    }
+
+    List<Empleado> empleados = unaControladora.empleadosPorDepartamento(idDepartamento);
+
+    System.out.println();
+    System.out.println("===== DEPARTAMENTO =====");
+    System.out.println("Nombre: " + departamento.getNombre());
+
+    if(departamento.getResponsable() != null){
+        System.out.println("Responsable: " + departamento.getResponsable().getNombre() + " " + departamento.getResponsable().getApellido());
+    }
+
+    System.out.println();
+    System.out.println("===== EMPLEADOS =====");
+
+    for(Empleado unEmpleado : empleados){
+        System.out.println(unEmpleado);
+    }
+
+    System.out.println();
+    System.out.println("Cantidad total de empleados: " + empleados.size());
+
+    Pausa();
+}
+//=================================================
+//||   FIN DE SECTOR D E P A R T A M E N T O S   ||
+//=================================================
+
+//================================
+//||   SECTOR P R O Y E C T O   ||
+//================================
 public static void MenuProyectos(){
     String opcion = "";
     while(!opcion.equals("0")){
         System.out.println("");
         System.out.println("╔════════════════════════════════════════╗");
         System.out.println("║   Proyectos                            ║");
-        System.out.println("╠══════════════════════════════ ═════════╣");
+        System.out.println("╠════════════════════════════════════════╣");
         System.out.println("║   1- Agregar Proyecto                  ║");
         System.out.println("║   2- Modificar Proyecto                ║");
         System.out.println("║   3- Eliminar Proyecto                 ║");
-        System.out.println("║   4- Ver Árbol de Proyectos            ║");
-        System.out.println("║   5- Mover Proyecto                    ║");
-        System.out.println("║   6- Buscar Proyecto por ID            ║");
-        System.out.println("║   7- Buscar Proyecto por Nombre        ║");
+        System.out.println("║   4- Listar Proyectos                  ║");
         System.out.println("╠════════════════════════════════════════╣");
         System.out.println("║   0- Volver                            ║");
         System.out.println("╚════════════════════════════════════════╝");
@@ -575,37 +806,172 @@ public static void MenuProyectos(){
         opcion = keyboard.nextLine();
 
         switch (opcion){
-//            case "1":
-//                AgregarProyecto();
-//                break;
-//            case "2":
-//                ModificarProyecto();
-//                break;
-//            case "3":
-//                EliminarProyecto();
-//                break;
-//            case "4":
-//                ListarProyectos();
-//                break;
-//            case "5":
-//                MoverProyecto();
-//                break;
-//            case "6":
-//                BuscarProyectoPorId();
-//                break;
-//            case "7":
-//                BuscarProyectoPorNombre();
-//                break;
-//            case "8":
-//                ReporteInventarioPorRama();
-//                break;
+            case "1":
+                AgregarProyecto();
+                break;
+            case "2":
+                ModificarProyecto();
+                break;
+            case "3":
+                EliminarProyecto();
+                break;
+            case "4":
+                ListarProyectos();
+                break;
         }
     }
 }
+public static void AgregarProyecto(){
+    Controladora unaControladora = new Controladora();
 
-//#region Proyectos
+    System.out.println("Ingresar un Proyecto");
 
-//region Asignaciones
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+    if (unaControladora.buscarProyectoPorId(id) != null) {
+        System.out.println("Ya existe un proyecto con ese ID.");
+        return;
+    }
+
+    keyboard.nextLine();
+    System.out.println("Ingrese el Nombre: ");
+    String nombre = keyboard.nextLine();
+
+    System.out.println("Ingrese la fecha de inicio (yyyy-MM-dd): ");
+    LocalDate fechaInicio = LocalDate.parse(keyboard.nextLine());
+
+    System.out.println("Ingrese la fecha de finalización (yyyy-MM-dd): ");
+    LocalDate fechaFin = LocalDate.parse(keyboard.nextLine());
+
+    System.out.println("Ingrese el Estado (planificado, en curso o finalizado): ");
+    String estado = keyboard.nextLine();
+    if (!estado.equalsIgnoreCase("Planificado")
+            && !estado.equalsIgnoreCase("En Curso")
+            && !estado.equalsIgnoreCase("Finalizado")) {
+        System.out.println("Estado inválido.");
+        return;
+    }
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del Empleado responsable:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado responsable = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (responsable == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    Proyecto unProy = new Proyecto(id, nombre, fechaInicio, fechaFin, estado, responsable);
+
+    if(unaControladora.agregarProyecto(unProy)){
+        System.out.println("Proyecto agregado!");
+    }else{
+        System.out.println("Ocurrió un error al agregar!");
+    }
+}
+public static void ModificarProyecto(){
+    Controladora unaControladora = new Controladora();
+
+    System.out.println("Modificar un Proyecto");
+    for (Proyecto unProy : unaControladora.ListaProyectos()) {
+        System.out.println(unProy);
+    }
+    System.out.println("");
+    Scanner keyboard = new Scanner(System.in);
+
+    System.out.println("Ingrese el ID del Proyecto:");
+    int id = keyboard.nextInt();
+    keyboard.nextLine();
+
+    Proyecto unProyecto = unaControladora.buscarProyectoPorId(id);
+
+    if(unProyecto == null){
+        System.out.println("No existe un proyecto con ese ID");
+        return;
+    }
+
+    System.out.println("Ingrese el nuevo nombre:");
+    String nombre = keyboard.nextLine();
+
+    System.out.println("Ingrese la nueva fecha de inicio (yyyy-MM-dd): ");
+    LocalDate fechaInicio = LocalDate.parse(keyboard.nextLine());
+
+    System.out.println("Ingrese la nueva fecha de finalización (yyyy-MM-dd): ");
+    LocalDate fechaFin = LocalDate.parse(keyboard.nextLine());
+
+    System.out.println("Ingrese el nuevo estado:");
+    String estado = keyboard.nextLine();
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del Empleado responsable:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado responsable = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (responsable == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    if(unaControladora.modificarProyecto(id,nombre,fechaInicio,fechaFin,estado,responsable)){
+        System.out.println("Proyecto modificado correctamente");
+    }
+    else{
+        System.out.println("Error al modificar proyecto");
+    }
+}
+public static void EliminarProyecto(){
+    System.out.println("Eliminar un Proyecto");
+    Controladora unaControladora = new Controladora();
+
+    for (Proyecto unProy: unaControladora.ListaProyectos()) {
+        System.out.println(unProy);
+    }
+    System.out.println("");
+
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+
+    Proyecto unProy = unaControladora.buscarProyectoPorId(id);
+
+    if(unProy == null){
+        System.out.println("No existe un Proyecto con ese ID");
+        return;
+    }
+
+    if(unaControladora.eliminarProyecto(id)){
+        System.out.println("Proyecto eliminado.");
+    }else{
+        System.out.println("Error al eliminar el Proyecto.");
+    }
+}
+public static void ListarProyectos(){
+    System.out.println("LISTADO DE PROYECTOS:");
+    System.out.println("--------------------------");
+    MostrarProyectos();
+    Pausa();
+}
+public static void MostrarProyectos(){
+    Controladora unaControladora = new Controladora();
+    for (Proyecto unProy: unaControladora.ListaProyectos()) {
+        System.out.println(unProy);
+    }
+}
+//=======================================
+//||   FIN DE SECTOR P R O Y E C T O   ||
+//=======================================
+
+//====================================
+//||   SECTOR A S I G N A C I Ó N   ||
+//====================================
 public static void MenuAsignaciones(){
     String opcion = "";
     while(!opcion.equals("0")){
@@ -616,10 +982,7 @@ public static void MenuAsignaciones(){
         System.out.println("║   1- Agregar Asignacion               ║");
         System.out.println("║   2- Modificar Asignacion             ║");
         System.out.println("║   3- Eliminar Asignacion              ║");
-        System.out.println("║   4- Ver Árbol de Asignaciones        ║");
-        System.out.println("║   5- Mover Asignacion                 ║");
-        System.out.println("║   6- Buscar Asignacion por ID         ║");
-        System.out.println("║   7- Buscar Asignacion por Nombre     ║");
+        System.out.println("║   4- Listar Asignaciones              ║");
         System.out.println("╠═══════════════════════════════════════╣");
         System.out.println("║   0- Volver                           ║");
         System.out.println("╚═══════════════════════════════════════╝");
@@ -628,32 +991,172 @@ public static void MenuAsignaciones(){
         opcion = keyboard.nextLine();
 
         switch (opcion){
-//            case "1":
-//                AgregarAsignacion();
-//                break;
-//            case "2":
-//                ModificarAsignacion();
-//                break;
-//            case "3":
-//                EliminarAsignacion();
-//                break;
-//            case "4":
-//                ListarAsignaciones();
-//                break;
-//            case "5":
-//                MoverAsignacion();
-//                break;
-//            case "6":
-//                BuscarAsignacionPorId();
-//                break;
-//            case "7":
-//                BuscarAsignacionPorNombre();
-//                break;
-//            case "8":
-//                ReporteInventarioPorRama();
-//                break;
+            case "1":
+                AgregarAsignacion();
+                break;
+            case "2":
+                ModificarAsignacion();
+                break;
+            case "3":
+                EliminarAsignacion();
+                break;
+            case "4":
+                ListarAsignaciones();
+                break;
         }
     }
 }
+public static void AgregarAsignacion(){
+    Controladora unaControladora = new Controladora();
 
-//#region Asignaciones
+    System.out.println("Asigne un proyecto");
+
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+    if (unaControladora.buscarAsignacionPorId(id) != null) {
+        System.out.println("Ya existe una asignación con ese ID.");
+        return;
+    }
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Seleccione el ID del empleado a asignar:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado empleado = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (empleado == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    System.out.println("PROYECTOS DISPONIBLES:");
+    for (Proyecto proyecto : unaControladora.ListaProyectos()) {
+        System.out.println(proyecto);
+    }
+    System.out.println("");
+    System.out.println("Seleccione el ID del proyecto:");
+    int idProyecto = keyboard.nextInt();
+    Proyecto proyecto = unaControladora.buscarProyectoPorId(idProyecto);
+    if (proyecto == null) {
+        System.out.println("Proyecto no encontrado.");
+        return;
+    }
+    keyboard.nextLine();
+
+    System.out.println("Ingrese las horas asignadas: ");
+    int horasAsignadas = keyboard.nextInt();
+
+    System.out.println("Ingrese el rol (desarrollador, tester, etc): ");
+    String rol = keyboard.nextLine();
+
+    Asignacion unaAsig = new Asignacion(id, empleado, proyecto, horasAsignadas, rol);
+
+    if(unaControladora.agregarAsignacion(unaAsig)){
+        System.out.println("Asignación realizada!");
+    }else{
+        System.out.println("Ocurrió un error al realizar la asignación!");
+    }
+}
+public static void ModificarAsignacion(){
+    Controladora unaControladora = new Controladora();
+
+    System.out.println("Modificar una Asignación");
+    for (Asignacion unaAsig : unaControladora.ListaAsignaciones()) {
+        System.out.println(unaAsig);
+    }
+    System.out.println("");
+    Scanner keyboard = new Scanner(System.in);
+
+    System.out.println("Ingrese el ID de la Asignación:");
+    int id = keyboard.nextInt();
+
+    Asignacion unAsignacion = unaControladora.buscarAsignacionPorId(id);
+
+    if(unAsignacion == null){
+        System.out.println("No existe una asignación con ese ID");
+        return;
+    }
+
+    System.out.println("EMPLEADOS DISPONIBLES:");
+    for (Empleado empleado : unaControladora.ListaEmpleados()) {
+        System.out.println(empleado);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del nuevo Empleado a asignar:");
+    int idEmpleado = keyboard.nextInt();
+    Empleado empleado = unaControladora.buscarEmpleadoPorId(idEmpleado);
+    if (empleado == null) {
+        System.out.println("Empleado no encontrado.");
+        return;
+    }
+
+    System.out.println("PROYECTOS DISPONIBLES:");
+    for (Proyecto proyecto : unaControladora.ListaProyectos()) {
+        System.out.println(proyecto);
+    }
+    System.out.println("");
+    System.out.println("Ingrese el ID del nuevo Proyecto:");
+    int idProyecto = keyboard.nextInt();
+    Proyecto proyecto = unaControladora.buscarProyectoPorId(idProyecto);
+    if (proyecto == null) {
+        System.out.println("Proyecto no encontrado.");
+        return;
+    }
+
+    System.out.println("Ingrese la nueva cantidad de Horas Asignadas: ");
+    int horasAsignadas = keyboard.nextInt();
+
+    System.out.println("Ingrese el nuevo Rol");
+    String rol = keyboard.nextLine();
+
+    if(unaControladora.modificarAsignacion(id,empleado,proyecto,horasAsignadas,rol)){
+        System.out.println("Asignación modificada correctamente");
+    }
+    else{
+        System.out.println("Error al modificar asignación");
+    }
+}
+public static void EliminarAsignacion(){
+    System.out.println("Eliminar una Asignación");
+    Controladora unaControladora = new Controladora();
+
+    for (Asignacion unaAsig: unaControladora.ListaAsignaciones()) {
+        System.out.println(unaAsig);
+    }
+    System.out.println("");
+
+    Scanner keyboard = new Scanner(System.in);
+    System.out.println("Ingrese el ID: ");
+    int id = keyboard.nextInt();
+
+    Asignacion unaAsig = unaControladora.buscarAsignacionPorId(id);
+
+    if(unaAsig == null){
+        System.out.println("No existe una Asignación con ese ID");
+        return;
+    }
+
+    if(unaControladora.eliminarAsignacion(id)){
+        System.out.println("Asignacion eliminado.");
+    }else{
+        System.out.println("Error al eliminar la Asignacion.");
+    }
+}
+public static void ListarAsignaciones(){
+    System.out.println("LISTADO DE ASIGNACIONES:");
+    System.out.println("--------------------------");
+    MostrarAsignaciones();
+    Pausa();
+}
+public static void MostrarAsignaciones(){
+    Controladora unaControladora = new Controladora();
+    for (Asignacion unaAsig : unaControladora.ListaAsignaciones()) {
+        System.out.println(unaAsig);
+    }
+}
+//===========================================
+//||   FIN DE SECTOR A S I G N A C I Ó N   ||
+//===========================================

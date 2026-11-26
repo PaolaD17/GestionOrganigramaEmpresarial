@@ -32,13 +32,17 @@ public class Asignacion {
         this.rol = rol;
     }
 
-    public @Override String toString() {
-        return "Asignacion {" +
-                "id=" + id +
-                ", empleado=" + empleado +
-                ", proyecto=" + proyecto +
-                ", horasAsignadas=" + horasAsignadas +
-                ", rol='" + rol + '\'' +
-                '}';
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                " | Empleado: " +
+                empleado.getNombre() + " " +
+                empleado.getApellido() +
+                " | Proyecto: " +
+                proyecto.getNombre() +
+                " | Horas: " +
+                horasAsignadas +
+                " | Rol: " +
+                rol;
     }
 }

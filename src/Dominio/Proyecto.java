@@ -25,19 +25,15 @@ public class Proyecto {
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
     public Empleado getResponsable() { return responsable; }
-
     public void setResponsable(Empleado responsable) {
         this.responsable = responsable;
     }
-
     public List<Asignacion> getAsignaciones() {
         return asignaciones;
     }
-
     public void setAsignaciones(List<Asignacion> asignaciones) {
         this.asignaciones = asignaciones;
     }
-
 
     //Constructor
     public Proyecto(int id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, String estado, Empleado responsable) {
@@ -48,5 +44,15 @@ public class Proyecto {
         this.estado = estado;
         this.responsable = responsable;
         this.asignaciones = new ArrayList<Asignacion>();
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                " | Nombre: " + nombre +
+                " | Estado: " + estado +
+                " | Responsable: " +
+                responsable.getNombre() + " " +
+                responsable.getApellido();
     }
 }
